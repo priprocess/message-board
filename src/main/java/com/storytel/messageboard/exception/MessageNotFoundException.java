@@ -1,4 +1,4 @@
-package com.storytel.messageboard.exceptions;
+package com.storytel.messageboard.exception;
 
 public class MessageNotFoundException extends RuntimeException {
     public MessageNotFoundException(int id) {
