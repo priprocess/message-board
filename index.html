@@ -1,0 +1,64 @@
+<script type="module">
+  import { createApp } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+
+  let url = "http://localhost:8080/";
+
+  const app = createApp({
+    data() {
+      return {
+        author: "",
+        message: "",
+        messages: [],
+      };
+    },
+
+    methods: {
+      async getMessages() {
+        fetch(url + "message")
+          .then((response) => response.json())
+          .then((data) => (this.messages = data));
+      },
+      async addMessage(message) {
+        const requestOptions = {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            author: this.author,
+            content: this.message,
+          }),
+        };
+        fetch(url + "message", requestOptions).then((response) =>
+          this.getMessages()
+        );
+      },
+      removeMessage(message) {
+        const requestOptions = {
+          method: "DELETE",
+        };
+        fetch(url + "message/" + message.id, requestOptions).then((response) =>
+          this.getMessages()
+        );
+      },
+    },
+    mounted() {
+      this.getMessages();
+    },
+  });
+  app.mount("#app");
+</script>
+
+<div id="app">
+  <form @submit.prevent="addMessage">
+    <input v-model="author" placeholder="author" />
+    <br />
+    <input v-model="message" placeholder="message" />
+    <br />
+    <button>Add Message</button>
+  </form>
+  <ul>
+    <li v-for="message in messages" :key="message.id">
+      {{ message.author }} - {{ message.content }}
+      <button @click="removeMessage(message)">X</button>
+    </li>
+  </ul>
+</div>
